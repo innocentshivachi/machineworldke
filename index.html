@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MachineWorldKE.com - Machine Rentals, Sales & Repairs in Wangige</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="/_sdk/data_sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gem: { blue: '#1a3a5c', orange: '#e8621a', light: '#f0f4f8', dark: '#0d1f33' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { height: 100%; margin: 0; font-family: 'DM Sans', sans-serif; }
+        h1,h2,h3,h4,h5,h6,.font-heading { font-family: 'Outfit', sans-serif; }
+        .app-wrapper { height: 100%; overflow-y: auto; overflow-x: hidden; width: 100%; }
+        .hero-bg { background: linear-gradient(135deg, #0d1f33 0%, #1a3a5c 50%, #0d1f33 100%); position: relative; }
+        .hero-bg::before { content:''; position:absolute; inset:0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        .equip-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .equip-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+        .nav-link { position:relative; }
+        .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:2px; background:#e8621a; transition:width 0.3s; }
+        .nav-link:hover::after { width:100%; }
+        .fade-up { opacity:0; transform:translateY(20px); animation: fadeUp 0.6s forwards; }
+        @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+        .stagger-1 { animation-delay:0.1s; } .stagger-2 { animation-delay:0.2s; } .stagger-3 { animation-delay:0.3s; } .stagger-4 { animation-delay:0.4s; }
+        .wa-float { position:fixed; bottom:24px; right:24px; z-index:999; width:60px; height:60px; background:#25d366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(37,211,102,0.4); transition:transform 0.2s; cursor:pointer; }
+        .wa-float:hover { transform:scale(1.1); }
+        .call-float { position:fixed; bottom:24px; left:24px; z-index:999; width:60px; height:60px; background:#e8621a; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(232,98,26,0.4); transition:transform 0.2s; cursor:pointer; }
+        .call-float:hover { transform:scale(1.1); }
+        .section-divider { height:4px; background: linear-gradient(90deg, #e8621a, #1a3a5c, #e8621a); }
+        .toast { position:fixed; top:20px; right:20px; z-index:1000; padding:16px 24px; border-radius:8px; color:white; font-weight:600; transform:translateX(120%); transition:transform 0.3s; }
+        .toast.show { transform:translateX(0); }
+        .toast-success { background:#16a34a; }
+        .toast-error { background:#dc2626; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .loading-pulse { animation: pulse 1.5s infinite; }
+    </style>
+</head>
+<body class="h-full">
+    <div class="app-wrapper bg-white" id="app">
+        <!-- Toast -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Navigation -->
+        <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="flex items-center justify-between h-16">
+                    <a href="#home" class="flex items-center gap-2 cursor-pointer">
+                        <div class="w-10 h-10 bg-gem-blue rounded-lg flex items-center justify-center">
+                            <svg width="24" height="24" viewbox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#e8621a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="font-heading font-bold text-gem-blue text-lg leading-none">MachineWorldKE</span>
+                            <span class="block text-[10px] text-gray-500 font-medium tracking-wider">Your Machine Shop Online</span>
+                        </div>
+                    </a>
+                    <div class="hidden md:flex items-center gap-6">
+                        <a href="#home" class="nav-link text-sm font-medium text-gray-700 hover:text-gem-blue">Home</a>
+                        <a href="#equipment" class="nav-link text-sm font-medium text-gray-700 hover:text-gem-blue">Equipment</a>
+                        <a href="#services" class="nav-link text-sm font-medium text-gray-700 hover:text-gem-blue">Services</a>
+                        <a href="#contact" class="nav-link text-sm font-medium text-gray-700 hover:text-gem-blue">Contact</a>
+                        <a href="tel:0797676571" class="bg-gem-orange text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-orange-600 transition flex items-center gap-2">
+                            <i data-lucide="phone" style="width:14px;height:14px"></i> Call Now
+                        </a>
+                    </div>
+                    <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-700"><i data-lucide="menu" style="width:24px;height:24px"></i></button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white px-4 pb-4">
+                <a href="#home" class="block py-3 text-sm font-medium text-gray-700 border-b border-gray-50">Home</a>
+                <a href="#equipment" class="block py-3 text-sm font-medium text-gray-700 border-b border-gray-50">Equipment</a>
+                <a href="#services" class="block py-3 text-sm font-medium text-gray-700 border-b border-gray-50">Services</a>
+                <a href="#contact" class="block py-3 text-sm font-medium text-gray-700 border-b border-gray-50">Contact</a>
+                <a href="tel:0797676571" class="block mt-3 text-center bg-gem-orange text-white text-sm font-semibold px-4 py-3 rounded-lg">Call Now</a>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section id="home" class="hero-bg py-16 sm:py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                <div class="max-w-3xl">
+                    <div class="fade-up inline-flex items-center gap-2 bg-gem-orange/20 text-gem-orange text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
+                        <i data-lucide="map-pin" style="width:12px;height:12px"></i> Serving Nairobi &amp; Beyond
+                    </div>
+                    <h1 id="hero-headline" class="fade-up stagger-1 font-heading text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-4">
+                        Machine Rentals, Sales &amp; Repairs in Wangige
+                    </h1>
+                    <p id="hero-subheadline" class="fade-up stagger-2 text-lg sm:text-xl text-blue-200 mb-8 max-w-xl">
+                        Generators, Power Tools, Solar Equipment &amp; More
+                    </p>
+                    <div class="fade-up stagger-3 flex flex-wrap gap-3">
+                        <a href="#equipment" class="bg-gem-orange hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg transition flex items-center gap-2 text-sm">
+                            <i data-lucide="package" style="width:16px;height:16px"></i> Rent Equipment
+                        </a>
+                        <a href="tel:0797676571" id="hero-call-btn" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-lg transition border border-white/20 flex items-center gap-2 text-sm">
+                            <i data-lucide="phone" style="width:16px;height:16px"></i> Call Now
+                        </a>
+                        <a id="hero-wa-btn" href="https://wa.me/254712414196?text=Hello%20GEM%20Machine%20World%2C%20I%27d%20like%20to%20enquire%20about%20your%20services."
+                           target="_blank" rel="noopener noreferrer"
+                           class="bg-[#25d366] hover:bg-[#20bd5a] text-white font-semibold px-6 py-3 rounded-lg transition flex items-center gap-2 text-sm">
+                            <svg width="16" height="16" viewbox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" /><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.626-1.467A11.932 11.932 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.17 0-4.207-.58-5.963-1.588l-.427-.254-2.746.871.837-2.676-.278-.442A9.71 9.71 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/>
+                            </svg> WhatsApp Us
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="fade-up stagger-4 mt-12 grid grid-cols-3 gap-4 max-w-md">
+                    <div class="text-center">
+                        <div class="text-2xl font-heading font-bold text-gem-orange">500+</div>
+                        <div class="text-xs text-blue-300">Tools Available</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-heading font-bold text-gem-orange">10+</div>
+                        <div class="text-xs text-blue-300">Years Experience</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-heading font-bold text-gem-orange">1000+</div>
+                        <div class="text-xs text-blue-300">Happy Clients</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- EQUIPMENT (with prices) -->
+        <section id="equipment" class="py-16 bg-gem-light">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <span class="text-gem-orange font-semibold text-sm uppercase tracking-wider">Our Inventory</span>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gem-blue mt-2">Equipment &amp; Products</h2>
+                    <p class="text-gray-500 mt-2 max-w-lg mx-auto text-sm">Quality machines available for rent, purchase, or repair. Rental rates shown where available.</p>
+                </div>
+
+                <div id="equipment-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+
+                    <!-- Welding Machine (iBELL) -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-48 bg-gray-200 overflow-hidden">
+                            <img src="images\weldingmachine.jpg" alt="iBELL Welding Machine" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Welding Machine (iBELL TIG/MMA)</h3>
+                            <p class="text-gray-500 text-xs mb-2">IBLT250-106 portable TIG/MMA welding machine.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Metal fabrication, repairs</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Rental:  Ksh 1,700</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Welding%20Machine" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Welding%20Machine" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generators -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-48 bg-gray-200 overflow-hidden">
+                            <img src="images\silentdieselgenerator.jpg" alt="Generators" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Generators</h3>
+                            <p class="text-gray-500 text-xs mb-2">3KVA petrol generators &amp; welding generators available.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Construction, home backup</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Rental:  Ksh 6,000</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Generator" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Generator" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                     <!-- Circular Saw -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-48 bg-gray-200 overflow-hidden">
+                            <img src="images\circularsaw.jpg" alt="Circular Saw" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Circular Saw (HITACHI)</h3>
+                            <p class="text-gray-500 text-xs mb-2">Powerful circular saw for wood, metal, and masonry.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Woodwork, metal cutting</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Rental: Ksh 1,000</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Circular%20Saw" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Circular%20Saw" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Power Drills -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\rotarhamerdrill.jpg" alt="Power Drills" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Power Drills</h3>
+                            <p class="text-gray-500 text-xs mb-2">Cordless and corded power drills for drilling and fastening.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Construction, woodwork</div><br>
+                             <p class="text-xs font-semibold text-gem-orange">Rental: Ksh 800</p><br>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Power%20Drill" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Power%20Drill" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Angle Grinders -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\anglegrinder.jpg" alt="Angle Grinders" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Angle Grinders</h3>
+                            <p class="text-gray-500 text-xs mb-2">Heavy-duty angle grinders for cutting and grinding.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Metal cutting, surface prep</div>
+                            <p class="text-xs font-semibold text-gem-orange">Rental: Ksh 800</p><br>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20an%20Angle%20Grinder" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20an%20Angle%20Grinder" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Circular Saw -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\Circular saw.jpg" alt="Circular Saw" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Circular Saw</h3>
+                            <p class="text-gray-500 text-xs mb-2">Powerful circular saw for wood, metal, and masonry. Available inches are 7 and 9.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Woodwork, metal cutting</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Rental: Ksh 1,000</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Circular%20Saw" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Circular%20Saw" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post Hole Digger -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-50 bg-gray-200 overflow-hidden">
+                            <img src="images\postholedigger.jpg" alt="Post Hole Digger" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Post Hole Digger</h3>
+                            <p class="text-gray-500 text-xs mb-2">Efficient tool for digging holes for fence posts and other applications.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Masonry, construction</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Rental: Ksh 1,800</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Bricks%20Cutting%20Machine" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Bricks%20Cutting%20Machine" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Solar Lights & Panels (updated image) -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\solarstreet.jpg" alt="Solar Light 120W IP67" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Solar Lights &amp; Panels</h3>
+                            <p class="text-gray-500 text-xs mb-2">120W solar floodlight IP67, plus full solar systems with monitor sensor.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Off-grid, security lighting</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20Solar%20Lights%20or%20Panels" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20Solar%20Lights%20or%20Panels" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Concrete Mixer -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\portableconcrete mixer.jpg" alt="Concrete Mixer" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Concrete Mixer</h3>
+                            <p class="text-gray-500 text-xs mb-2">Electric & petrol mixers for small to medium jobs.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Construction, roadworks</div>
+                            <p class="text-xs font-semibold text-gem-orange">Rental: Ksh 5,000</p><br>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Concrete%20Mixer" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Concrete%20Mixer" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Concrete Vibrator -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\pocketdrivenvibrator.jpg" alt="Concrete Vibrator" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Concrete Vibrator</h3>
+                            <p class="text-gray-500 text-xs mb-2">High-frequency concrete vibrator used to remove air bubbles and ensure proper compaction of poured concrete for strong and durable structures.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Foundations, slabs, columns</div>
+                            <p class="text-xs font-semibold text-gem-orange">Rental: Ksh 2,500</p><br>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Concrete%20Vibrator" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Concrete%20Vibrator" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vibrator Shaft -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\concretevibraorpocker.jpg" alt="Concrete Vibrator" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Vibrator Shaft</h3>
+                            <p class="text-gray-500 text-xs mb-2">A vibrator shaft is used with concrete vibrators to properly settle freshly poured concrete by removing trapped air, ensuring strong bonding in foundations, slabs, and columns.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Foundations, slabs, columns</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Concrete%20Vibrator" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Concrete%20Vibrator" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demolition Hammer (Bosch) -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\jackhammer.jpg" alt="Bosch Demolition Hammer" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Demolition Hammer (Bosch)</h3>
+                            <p class="text-gray-500 text-xs mb-2">Heavy-duty breaker for concrete & stone demolition.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Demolition, breaking</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Demolition%20Hammer" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Demolition%20Hammer" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lifter  (Tolsen) -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-50 bg-gray-200 overflow-hidden">
+                            <img src="images\lifter.jpg" alt="Lifter (Tolsen)" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Lifter (Tolsen)</h3>
+                            <p class="text-gray-500 text-xs mb-2">Heavy-duty construction lifter for lifting and moving materials on site.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Soil compaction, roadworks</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Tamping%20Rammer" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Tamping%20Rammer" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lawn Mower -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\lawnmowers.jpg" alt="Lawn Mower" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Lawn Mower</h3>
+                            <p class="text-gray-500 text-xs mb-2">Self-propelled mower for gardens and compounds.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Gardening, landscaping</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Lawn%20Mower" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Lawn%20Mower" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Tamming  Rammer -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-50 bg-gray-200 overflow-hidden">
+                            <img src="images\tampingrammer.jpg" alt="Tamping Rammer" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Tamping Rammer</h3>
+                            <p class="text-gray-500 text-xs mb-2">Heavy-duty tamping rammer ideal for compacting soil in road construction and foundation work.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Gardening, landscaping</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Lawn%20Mower" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Lawn%20Mower" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Compactor -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-44 bg-gray-200 overflow-hidden">
+                            <img src="images\platecompactor.jpg" alt="Plate Compactor" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Plate Compactor</h3>
+                            <p class="text-gray-500 text-xs mb-2">Heavy-duty machine used for compacting soil, gravel, and asphalt to create a strong and stable base for construction work.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Gardening, landscaping</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20renting%20a%20Lawn%20Mower" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Lawn%20Mower" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Water Pump / Vacuum -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-40 bg-gray-200 overflow-hidden">
+                            <img src="images\waterpumps.jpg" alt="Water Pump / Karcher Vacuum" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Water Pump / Vacuum Cleaner</h3>
+                            <p class="text-gray-500 text-xs mb-2">Submersible pumps (4SR series) & Karcher vacuums.</p>
+                            <div class="flex items-center gap-1 text-xs text-gem-orange mb-1"><i data-lucide="check-circle" style="width:12px;height:12px"></i> Water supply, cleaning</div>
+                            <p class="text-xs font-bold text-gem-orange mb-3">Call / WhatsApp for pricing</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%27m%20interested%20in%20a%20Water%20Pump%20or%20Vacuum" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Request Rental</a>
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20buy%20a%20Water%20Pump%20or%20Vacuum" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-blue hover:bg-blue-900 text-white text-xs font-semibold py-2 rounded-lg transition">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rental Price List (Board 1) -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-50 bg-gray-200 overflow-hidden">
+                            <img src="images\WhatsApp Image 2026-04-26 at 4.02.23 PM (2).jpeg" alt="Rental Price List 1" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Rental Rates (Board 1)</h3>
+                            <p class="text-gray-500 text-xs mb-2">Check our rental charges for various tools.</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20enquire%20about%20rental%20prices" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Enquire on WhatsApp</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rental Price List (Board 2) -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-50 bg-gray-200 overflow-hidden">
+                            <img src="images\WhatsApp Image 2026-04-26 at 4.02.23 PM (1).jpeg" alt="Rental Price List 2" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Rental Rates (Board 2)</h3>
+                            <p class="text-gray-500 text-xs mb-2">Welding, generator, circular saw, brick cutter & more.</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20enquire%20about%20rental%20prices" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Enquire on WhatsApp</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- G&M Services Signboard -->
+                    <div class="equip-card bg-white rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="relative h-50 bg-gray-200 overflow-hidden">
+                            <img src="images\WhatsApp Image 2026-04-26 at 4.02.24 PM (1).jpeg" alt="G&M Machine World Services" loading="lazy" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #1a3a5c 0%, #0d1f33 100%)';">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-heading font-bold text-gem-blue mb-1">Our Services &amp; Equipment</h3>
+                            <p class="text-gray-500 text-xs mb-2">Motor rewinding, hiring, repair & sales – all under one roof.</p>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/254712414196?text=Hello%2C%20I%20want%20to%20enquire%20about%20your%20services" target="_blank" rel="noopener noreferrer"
+                                   class="flex-1 text-center bg-gem-orange hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">Enquire Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- /equipment-grid -->
+            </div>
+        </section>
+
+        <!-- SERVICES (unchanged) -->
+        <section id="services" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <span class="text-gem-orange font-semibold text-sm uppercase tracking-wider">What We Do</span>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gem-blue mt-2">Our Services</h2>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                    <div class="bg-gem-light rounded-xl p-6 text-center border border-gray-100">
+                        <div class="w-14 h-14 bg-gem-orange/10 rounded-xl flex items-center justify-center mx-auto mb-4"><i data-lucide="repeat" style="width:28px;height:28px;color:#e8621a"></i></div>
+                        <h3 class="font-heading font-bold text-gem-blue text-lg mb-2">Equipment Rental</h3>
+                        <p class="text-gray-500 text-sm">Flexible daily, weekly, or monthly rental plans for all our machines and tools.</p>
+                    </div>
+                    <div class="bg-gem-light rounded-xl p-6 text-center border border-gray-100">
+                        <div class="w-14 h-14 bg-gem-orange/10 rounded-xl flex items-center justify-center mx-auto mb-4"><i data-lucide="shopping-bag" style="width:28px;height:28px;color:#e8621a"></i></div>
+                        <h3 class="font-heading font-bold text-gem-blue text-lg mb-2">Equipment Sales</h3>
+                        <p class="text-gray-500 text-sm">Buy brand new and quality refurbished machines at competitive prices.</p>
+                    </div>
+                    <div class="bg-gem-light rounded-xl p-6 text-center border border-gray-100">
+                        <div class="w-14 h-14 bg-gem-orange/10 rounded-xl flex items-center justify-center mx-auto mb-4"><i data-lucide="wrench" style="width:28px;height:28px;color:#e8621a"></i></div>
+                        <h3 class="font-heading font-bold text-gem-blue text-lg mb-2">Repair &amp; Maintenance</h3>
+                        <p class="text-gray-500 text-sm">Expert repair services for generators, welding machines, power tools, and more.</p>
+                    </div>
+                    <div class="bg-gem-light rounded-xl p-6 text-center border border-gray-100">
+                        <div class="w-14 h-14 bg-gem-orange/10 rounded-xl flex items-center justify-center mx-auto mb-4"><i data-lucide="store" style="width:28px;height:28px;color:#e8621a"></i></div>
+                        <h3 class="font-heading font-bold text-gem-blue text-lg mb-2">Accessories Shop</h3>
+                        <p class="text-gray-500 text-sm">Cables, batteries, switches, bulbs, solar panels, and all essential accessories.</p>
+                    </div>
+                </div>
+                <!-- How to Rent -->
+                <div class="bg-gem-blue rounded-2xl p-8 sm:p-12 text-white">
+                    <h3 class="font-heading text-2xl font-bold mb-8 text-center">How to Rent Equipment</h3>
+                    <div class="grid sm:grid-cols-3 gap-8">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-gem-orange rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-heading font-bold">1</div>
+                            <h4 class="font-semibold mb-1">Browse &amp; Choose</h4>
+                            <p class="text-blue-200 text-sm">Select the equipment you need from our catalogue above.</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-gem-orange rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-heading font-bold">2</div>
+                            <h4 class="font-semibold mb-1">Call or WhatsApp</h4>
+                            <p class="text-blue-200 text-sm">Contact us to confirm availability and agree on rental terms.</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-gem-orange rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-heading font-bold">3</div>
+                            <h4 class="font-semibold mb-1">Pick Up or Deliver</h4>
+                            <p class="text-blue-200 text-sm">Collect from our shop or we deliver right to your site in Nairobi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT (unchanged) -->
+        <section id="contact" class="py-16 bg-gem-light">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <span class="text-gem-orange font-semibold text-sm uppercase tracking-wider">Get In Touch</span>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gem-blue mt-2">Contact Us</h2>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-xl p-6 border border-gray-100">
+                            <h3 class="font-heading font-bold text-gem-blue text-lg mb-4">Reach Us Directly</h3>
+                            <div class="space-y-4">
+                                <a href="tel:0797676571" id="contact-phone1" class="flex items-center gap-3 text-gray-700 hover:text-gem-orange transition">
+                                    <div class="w-10 h-10 bg-gem-orange/10 rounded-lg flex items-center justify-center"><i data-lucide="phone" style="width:18px;height:18px;color:#e8621a"></i></div>
+                                    <div><div class="text-xs text-gray-400">Primary Line</div><div class="font-semibold">0797 676 571</div></div>
+                                </a>
+                                <a href="tel:0752909509" id="contact-phone2" class="flex items-center gap-3 text-gray-700 hover:text-gem-orange transition">
+                                    <div class="w-10 h-10 bg-gem-orange/10 rounded-lg flex items-center justify-center"><i data-lucide="phone" style="width:18px;height:18px;color:#e8621a"></i></div>
+                                    <div><div class="text-xs text-gray-400">Secondary Line</div><div class="font-semibold">0752 909 509</div></div>
+                                </a>
+                                <a id="contact-wa" href="https://wa.me/254712414196?text=Hello%20GEM%20Machine%20World" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-gray-700 hover:text-green-600 transition">
+                                    <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                                        <svg width="18" height="18" viewbox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.626-1.467A11.932 11.932 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.17 0-4.207-.58-5.963-1.588l-.427-.254-2.746.871.837-2.676-.278-.442A9.71 9.71 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+                                    </div>
+                                    <div><div class="text-xs text-gray-400">WhatsApp</div><div class="font-semibold">0712 414 196</div></div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-100">
+                            <h3 class="font-heading font-bold text-gem-blue text-lg mb-2">Visit Our Shop</h3>
+                            <p class="text-gray-500 text-sm mb-4">Come see our full range of equipment in person. We're conveniently located in Nairobi.</p>
+                            <div class="flex items-center gap-2 text-sm text-gray-600"><i data-lucide="clock" style="width:14px;height:14px;color:#e8621a"></i> Mon – Sat: 7:30 AM – 6:00 PM</div>
+                            <div class="flex items-center gap-2 text-sm text-gray-600 mt-1"><i data-lucide="clock" style="width:14px;height:14px;color:#e8621a"></i> Sunday: 9:00 AM – 2:00 PM</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border border-gray-100">
+                        <h3 class="font-heading font-bold text-gem-blue text-lg mb-4">Send Us a Message</h3>
+                        <form id="contact-form" class="space-y-4">
+                            <div><label for="cf-name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label><input id="cf-name" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-gem-orange focus:border-transparent outline-none" placeholder="John Kamau"></div>
+                            <div><label for="cf-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input id="cf-phone" type="tel" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-gem-orange focus:border-transparent outline-none" placeholder="07XX XXX XXX"></div>
+                            <div><label for="cf-email" class="block text-sm font-medium text-gray-700 mb-1">Email (optional)</label><input id="cf-email" type="email" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-gem-orange focus:border-transparent outline-none" placeholder="you@example.com"></div>
+                            <div><label for="cf-equipment" class="block text-sm font-medium text-gray-700 mb-1">Equipment Interest</label><select id="cf-equipment" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-gem-orange focus:border-transparent outline-none bg-white"><option value="">Select equipment...</option><option>Generator</option><option>Welding Machine</option><option>Power Drill</option><option>Angle Grinder</option><option>Cutting Machine</option><option>Pressure Washer</option><option>Air Compressor</option><option>Tool Kit</option><option>Extension Cable</option><option>Spray Gun</option><option>Battery / Inverter</option><option>LED Lighting</option><option>Solar Equipment</option><option>Electrical Accessories</option><option>Other</option></select></div>
+                            <div><label for="cf-type" class="block text-sm font-medium text-gray-700 mb-1">I want to...</label><select id="cf-type" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-gem-orange focus:border-transparent outline-none bg-white"><option value="rent">Rent Equipment</option><option value="buy">Buy Equipment</option><option value="repair">Get Repair Service</option><option value="enquiry">General Enquiry</option></select></div>
+                            <div><label for="cf-msg" class="block text-sm font-medium text-gray-700 mb-1">Message</label><textarea id="cf-msg" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-gem-orange focus:border-transparent outline-none resize-none" placeholder="Tell us what you need..."></textarea></div>
+                            <button id="cf-submit" type="submit" class="w-full bg-gem-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2 text-sm"><i data-lucide="send" style="width:16px;height:16px"></i> Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-gem-dark text-white py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="grid sm:grid-cols-3 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-8 h-8 bg-gem-orange rounded flex items-center justify-center">
+                                <svg width="16" height="16" viewbox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div><span class="font-heading font-bold">MachineWorldKE.com</span>
+                        </div>
+                        <p class="text-blue-300 text-sm">Your trusted partner for machine rentals, sales, and repairs in Nairobi.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-semibold mb-3 text-sm">Quick Links</h4>
+                        <div class="space-y-2 text-sm text-blue-300">
+                            <a href="#home" class="block hover:text-gem-orange transition">Home</a>
+                            <a href="#equipment" class="block hover:text-gem-orange transition">Equipment</a>
+                            <a href="#services" class="block hover:text-gem-orange transition">Services</a>
+                            <a href="#contact" class="block hover:text-gem-orange transition">Contact</a>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-semibold mb-3 text-sm">Contact</h4>
+                        <div class="space-y-2 text-sm text-blue-300">
+                            <a href="tel:0797676571" id="footer-phone1" class="block hover:text-gem-orange transition">📞 0797 676 571</a>
+                            <a href="tel:0752909509" id="footer-phone2" class="block hover:text-gem-orange transition">📞 0752 909 509</a>
+                            <a id="footer-wa" href="https://wa.me/254712414196" target="_blank" rel="noopener noreferrer" class="block hover:text-green-400 transition">💬 WhatsApp: 0712 414 196</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-white/10 pt-6 text-center text-xs text-blue-400">
+                    © 2025 MachineWorldKE.com. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+        <!-- Floating Buttons -->
+        <a id="wa-float" href="https://wa.me/254712414196?text=Hello%20MachineWorldKE.com%2C%20I%20need%20your%20services." target="_blank" rel="noopener noreferrer" class="wa-float" title="WhatsApp Us">
+            <svg width="30" height="30" viewbox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.626-1.467A11.932 11.932 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.17 0-4.207-.58-5.963-1.588l-.427-.254-2.746.871.837-2.676-.278-.442A9.71 9.71 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+        </a>
+        <a href="tel:0797676571" class="call-float" title="Call Now" id="call-float">
+            <i data-lucide="phone" style="width:26px;height:26px;color:white"></i>
+        </a>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        document.querySelectorAll('#mobile-menu a').forEach(a => a.addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }));
+
+        // Toast function
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast toast-${type} show`;
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // Default config (used by SDK, no longer overwrites hero text)
+        const defaultConfig = {
+            headline: 'Machine Rentals, Sales & Repairs in Nairobi',
+            subheadline: 'Generators, Power Tools, Solar Equipment & More',
+            phone_primary: '0797676571',
+            phone_secondary: '0752909509',
+            whatsapp_number: '0712414196',
+            background_color: '#f0f4f8',
+            surface_color: '#ffffff',
+            text_color: '#1a3a5c',
+            primary_action_color: '#e8621a',
+            secondary_action_color: '#1a3a5c',
+            font_family: 'Outfit',
+            font_size: 16
+        };
+
+        // Element SDK (no longer touches #hero-headline or #hero-subheadline)
+        window.elementSdk.init({
+            defaultConfig,
+            onConfigChange: async (config) => {
+                const c = key => config[key] || defaultConfig[key];
+                document.body.style.fontFamily = `${c('font_family')}, DM Sans, sans-serif`;
+                document.body.style.fontSize = c('font_size') + 'px';
+            },
+            mapToCapabilities: (config) => {
+                const c = key => config[key] || defaultConfig[key];
+                const make = (key) => ({
+                    get: () => c(key),
+                    set: (v) => { config[key] = v; window.elementSdk.setConfig({ [key]: v }); }
+                });
+                return {
+                    recolorables: [make('background_color'), make('surface_color'), make('text_color'), make('primary_action_color'), make('secondary_action_color')],
+                    borderables: [],
+                    fontEditable: make('font_family'),
+                    fontSizeable: { get: () => c('font_size'), set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+                };
+            },
+            mapToEditPanelValues: (config) => new Map([
+                ['headline', config.headline || defaultConfig.headline],
+                ['subheadline', config.subheadline || defaultConfig.subheadline],
+                ['phone_primary', config.phone_primary || defaultConfig.phone_primary],
+                ['phone_secondary', config.phone_secondary || defaultConfig.phone_secondary],
+                ['whatsapp_number', config.whatsapp_number || defaultConfig.whatsapp_number]
+            ])
+        });
+
+        // Data SDK (write-only for contact form)
+        window.dataSdk.init({
+            onDataChanged(data) { /* write-only mode */ }
+        });
+
+        // Contact form submission
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('cf-submit');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-pulse">Sending...</span>';
+
+            const result = await window.dataSdk.create({
+                name: document.getElementById('cf-name').value,
+                phone: document.getElementById('cf-phone').value,
+                email: document.getElementById('cf-email').value || '',
+                equipment: document.getElementById('cf-equipment').value || '',
+                request_type: document.getElementById('cf-type').value,
+                message: document.getElementById('cf-msg').value || '',
+                submitted_at: new Date().toISOString()
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="send" style="width:16px;height:16px"></i> Send Message';
+            lucide.createIcons();
+
+            if (result.isOk) {
+                showToast('Message sent! We\'ll get back to you shortly.');
+                document.getElementById('contact-form').reset();
+            } else {
+                showToast('Failed to send. Please call us instead.', 'error');
+            }
+        });
+
+        // Render Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
